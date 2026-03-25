@@ -19,4 +19,4 @@ app.include_router(task_router)
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "version": "1.0.0", "service": "task-manager-api"}
