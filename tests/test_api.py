@@ -31,7 +31,7 @@ def setup_db():
 
 def get_token():
     client.post("/auth/register", json={"username": "test", "email": "test@test.com", "password": "test123"})
-    resp = client.post("/auth/login", json={"username": "test", "password": "test123"})
+    resp = client.post("/auth/login", data={"username": "test", "password": "test123"})
     return resp.json()["access_token"]
 
 
@@ -42,7 +42,7 @@ def auth(token):
 def test_register_and_login():
     resp = client.post("/auth/register", json={"username": "user1", "email": "u1@test.com", "password": "pass123"})
     assert resp.status_code == 201
-    resp = client.post("/auth/login", json={"username": "user1", "password": "pass123"})
+    resp = client.post("/auth/login", data={"username": "user1", "password": "pass123"})
     assert resp.status_code == 200
     assert "access_token" in resp.json()
 
@@ -128,9 +128,9 @@ def test_unauthorized_access():
 
 def test_user_isolation():
     client.post("/auth/register", json={"username": "a", "email": "a@t.com", "password": "p"})
-    t1 = client.post("/auth/login", json={"username": "a", "password": "p"}).json()["access_token"]
+    t1 = client.post("/auth/login", data={"username": "a", "password": "p"}).json()["access_token"]
     client.post("/auth/register", json={"username": "b", "email": "b@t.com", "password": "p"})
-    t2 = client.post("/auth/login", json={"username": "b", "password": "p"}).json()["access_token"]
+    t2 = client.post("/auth/login", data={"username": "b", "password": "p"}).json()["access_token"]
     client.post("/tasks/", json={"title": "A görevi"}, headers=auth(t1))
     resp = client.get("/tasks/", headers=auth(t2))
     assert len(resp.json()) == 0
